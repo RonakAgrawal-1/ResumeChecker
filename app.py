@@ -7,6 +7,7 @@ from skills_keywords import skills_keywords
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
+import pandas as pd
 
 # Function to extract the candidate's name from the resume
 def extract_candidate_name(text):
@@ -108,11 +109,6 @@ st.set_page_config(
 
 # Introduction Section
 st.title("Welcome to the Resume and GitHub Profile Analyzer!")
-st.write("This tool helps you extract and analyze information from resumes and GitHub profiles.")
-st.write("Follow these steps to get started:")
-st.markdown("1. Upload a resume in PDF or DOC/DOCX format using the 'Upload Resume' section below.")
-st.markdown("2. Enter the job description in the 'Enter Job Description' section below.")
-st.markdown("3. Click the 'Analyze' button to see the results.")
 
 # Create a sidebar for inputs
 st.sidebar.title("Resume and GitHub Analyzer")
@@ -142,97 +138,108 @@ if st.sidebar.button("Analyze"):
 
             # Extract GitHub link from the candidate's resume text
             github_link = extract_github_link(resume_text)
-            st.subheader("GitHub Link")
-            if "error" in github_link:
-                st.write(f"Error: {github_link['error']}")
-            else:
-                # Check if the link is missing "https://" and add it if necessary
-                if not github_link.startswith("https://"):
-                    github_link = "https://" + github_link
-                st.write(f"The candidate's GitHub link is: [{github_link}]({github_link})")
 
-            # Analyze GitHub profile if a link is found
-            if github_link and not "GitHub link not found" in github_link:
+            # Calculate the matching score based on skills
+            score, common_skills = calculate_matching_score(extract_candidate_skills(resume_text), job_description_text)
+
+            # Left Column (Name, GitHub Link, Common Skills, GitHub Repositories, Technologies)
+            st.subheader("Candidate Information")
+            col1, col2 = st.columns(2)
+
+            # Candidate Name
+            with col1:
+                candidate_name = extract_candidate_name(resume_text)
+                st.write(f"Name: {candidate_name}")
+
+            # GitHub Link
+            with col1:
+                if "error" in github_link:
+                    st.write(f"Error: {github_link['error']}")
+                else:
+                    # Check if the link is missing "https://" and add it if necessary
+                    if not github_link.startswith("https://"):
+                        github_link = "https://" + github_link
+                    st.write(f"GitHub: [{github_link}]({github_link})")
+
+            # Common Skills
+            with col1:
+                st.subheader("Common Skills with Job Description")
+                if common_skills:
+                    for skill in common_skills:
+                        st.write(f"- {skill}")
+                else:
+                    st.write("No common skills found between the job description and the candidate's skills.")
+
+            
+
+            # GitHub Repositories and Technologies
+            with col2:
+                st.subheader("GitHub Repositories and Technologies")
                 username = extract_username_from_url(github_link)
                 if username:
                     user_repositories = fetch_user_repositories(username)
                     if user_repositories:
-                        st.subheader(f"GitHub Repositories for {username}:")
-                        repo_names = []
-                        repo_languages = set()
+                        repo_data = {
+                            "Repository Name": [],
+                            "Technologies Used": []
+                        }
+
                         for repo in user_repositories:
                             repo_name = repo.get("name", "")
                             repo_language = repo.get("language", "")
                             if repo_name:
-                                repo_names.append(repo_name)
+                                repo_data["Repository Name"].append(repo_name)
                             if repo_language:
-                                repo_languages.add(repo_language)
+                                repo_data["Technologies Used"].append(repo_language)
 
-                        # Format the repository names and technologies
-                        formatted_repo_names = [f"- {name}" for name in repo_names]
-                        formatted_repo_languages = [f"- {language}" for language in repo_languages]
+                        # Ensure both lists have the same length
+                        max_length = max(len(repo_data["Repository Name"]), len(repo_data["Technologies Used"]))
+                        repo_data["Repository Name"] += [""] * (max_length - len(repo_data["Repository Name"]))
+                        repo_data["Technologies Used"] += [""] * (max_length - len(repo_data["Technologies Used"]))
 
-                        st.write("Repositories:")
-                        for name in formatted_repo_names:
-                            st.write(name)
+                        # Create a DataFrame for displaying repositories and technologies
+                        repo_df = pd.DataFrame(repo_data)
 
-                        st.write("Technologies:")
-                        for language in formatted_repo_languages:
-                            st.write(language)
+                        st.write(repo_df)
                     else:
                         st.write(f"No repositories found for {github_link}.")
                 else:
                     st.write("Invalid GitHub profile link. Please check the link format.")
-            else:
-                st.write("No GitHub link found in the resume.")
 
-            # Candidate Name
-            st.subheader("Candidate Name")
-            candidate_name = extract_candidate_name(resume_text)
-            st.write(f"The candidate's name is: {candidate_name}")
+            # Right Column (Matching Score, All Skills)
+            st.subheader("Matching Score and All Skills")
+            col3, col4, col5 = st.columns(3)  # Add a third column
 
             # Matching Score
-            st.subheader("Matching Score")
-            extracted_skills = extract_candidate_skills(resume_text)
-            score, common_skills = calculate_matching_score(extracted_skills, job_description_text)
+            with col3:
+                score_color = "green" if score >= 0.8 else "orange" if 0.5 <= score < 0.8 else "red"
 
-            # Define colors based on the matching score
-            if score >= 0.8:
-                score_color = "green"
-            elif 0.5 <= score < 0.8:
-                score_color = "orange"
-            else:
-                score_color = "red"
+                # Create a circular progress bar for the matching score
+                st.markdown(
+                    f'<div style="text-align: center;">'
+                    f'<p style="font-size: 16px;">Matching Score</p>'
+                    f'<div style="border-radius: 50%; background-color: {score_color}; width: 80px; height: 80px; margin: 0 auto;">'
+                    f'<p style="font-size: 24px; color: white; line-height: 80px;">{int(score * 100)}%</p>'
+                    f'</div>'
+                    f'</div>',
+                    unsafe_allow_html=True
+                )
 
-            # Create a circular progress bar
-            progress_html = f"""
-                <div style="text-align: center;">
-                    <svg width="120" height="120" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="60" cy="60" r="54" fill="none" stroke="#e6e6e6" stroke-width="12"></circle>
-                        <circle cx="60" cy="60" r="54" fill="none" stroke="{score_color}" stroke-width="12"
-                                stroke-dasharray="{score * 339}" stroke-dashoffset="0" transform="rotate(-90 60 60)">
-                        </circle>
-                        <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" font-size="24" fill="{score_color}">
-                            {int(score * 100)}%
-                        </text>
-                    </svg>
-                </div>
-            """
+            # All Skills
+            with col4:
+                st.markdown(
+                    f'<div style="text-align: center;">'
+                    f'<p style="font-size: 16px;">All Skills</p>'
+                    f'</div>',
+                    unsafe_allow_html=True
+                )
+                extracted_skills = extract_candidate_skills(resume_text)
+                if extracted_skills:
+                    skills_text = ", ".join(extracted_skills)
+                else:
+                    skills_text = "No skills found in the resume."
 
-            st.markdown(progress_html, unsafe_allow_html=True)
-            st.write(f"The matching score with the job description is: {score:.2%}")
-
-            # Skills Extracted
-            st.subheader("Skills Extracted from Resume")
-            if extracted_skills:
-                st.write(", ".join(extracted_skills))
-            else:
-                st.warning("No skills found in the resume.")
-
-            # Common Skills
-            st.subheader("Common Skills with Job Description")
-            if common_skills:
-                st.write(", ".join(common_skills))
-            else:
-                st.warning("No common skills found between the job description and the candidate's skills.")
-
+                st.markdown(
+                    f'<p style="font-size: 14px;">{skills_text}</p>',
+                    unsafe_allow_html=True
+                )
