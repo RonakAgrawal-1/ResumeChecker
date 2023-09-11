@@ -107,6 +107,7 @@ st.set_page_config(
 )
 
 # Introduction Section
+st.write("First skill keyword:", skills_keywords[0])
 st.title("Welcome to the Resume and GitHub Profile Analyzer!")
 st.write("This tool helps you extract and analyze information from resumes and GitHub profiles.")
 st.write("Follow these steps to get started:")
