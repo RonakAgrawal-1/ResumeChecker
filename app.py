@@ -128,7 +128,6 @@ st.sidebar.subheader("Step 2: Enter Job Description")
 job_description_text = st.sidebar.text_area("Enter the job description")
 
 
-
 # Analyze Button in Sidebar
 if st.sidebar.button("Analyze"):
     if not uploaded_file or not job_description_text:
