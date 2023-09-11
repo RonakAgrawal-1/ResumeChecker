@@ -10,7 +10,7 @@ docx2txt==0.8
 entrypoints==0.4
 fiona==1.8.20
 Flask==2.1.1
-fsspec==2022.1.1
+fsspec==2023.9.0
 geopandas==0.10.2
 jinja2==3.1.2
 jsonschema==4.19.0
