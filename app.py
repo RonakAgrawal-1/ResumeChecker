@@ -78,7 +78,8 @@ def extract_candidate_skills(text):
         skills = list(set([skill.lower().capitalize() for skill in skills_keywords if re.search(rf'\b{skill}\b', text, re.IGNORECASE)]))
         return skills
     except Exception as e:
-        return {"error": str(e)}
+        st.error(f"Error extracting candidate skills: {str(e)}")
+        return []
 
 # Function to extract skills from the user-provided job description text
 def extract_job_description_skills(job_description_text):
@@ -86,7 +87,8 @@ def extract_job_description_skills(job_description_text):
         skills = list(set([skill.lower().capitalize() for skill in skills_keywords if re.search(rf'\b{skill}\b', job_description_text, re.IGNORECASE)]))
         return skills
     except Exception as e:
-        return {"error": str(e)}
+        st.error(f"Error extracting job description skills: {str(e)}")
+        return []
 
 # Function to calculate the matching score based on skills
 def calculate_matching_score(candidate_skills, job_description_text):
