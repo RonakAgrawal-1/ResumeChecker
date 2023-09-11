@@ -140,10 +140,6 @@ if st.sidebar.button("Analyze"):
                 st.error("Unsupported file format. Please upload a PDF or DOC/DOCX file.")
                 st.stop()
 
-            # Display extracted resume text
-            st.subheader("Extracted Resume Text")
-            st.write(resume_text)  # Display the extracted resume text
-
             # Extract GitHub link from the candidate's resume text
             github_link = extract_github_link(resume_text)
             st.subheader("GitHub Link")
