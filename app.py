@@ -78,8 +78,7 @@ def extract_candidate_skills(text):
         skills = list(set([skill.lower().capitalize() for skill in skills_keywords if re.search(rf'\b{skill}\b', text, re.IGNORECASE)]))
         return skills
     except Exception as e:
-        st.error(f"Error extracting candidate skills: {str(e)}")
-        return []
+        return {"error": str(e)}
 
 # Function to extract skills from the user-provided job description text
 def extract_job_description_skills(job_description_text):
@@ -87,8 +86,7 @@ def extract_job_description_skills(job_description_text):
         skills = list(set([skill.lower().capitalize() for skill in skills_keywords if re.search(rf'\b{skill}\b', job_description_text, re.IGNORECASE)]))
         return skills
     except Exception as e:
-        st.error(f"Error extracting job description skills: {str(e)}")
-        return []
+        return {"error": str(e)}
 
 # Function to calculate the matching score based on skills
 def calculate_matching_score(candidate_skills, job_description_text):
@@ -237,3 +235,4 @@ if st.sidebar.button("Analyze"):
                 st.write(", ".join(common_skills))
             else:
                 st.warning("No common skills found between the job description and the candidate's skills.")
+
