@@ -127,9 +127,6 @@ uploaded_file = st.sidebar.file_uploader("Upload your resume (PDF or DOC/DOCX)")
 st.sidebar.subheader("Step 2: Enter Job Description")
 job_description_text = st.sidebar.text_area("Enter the job description")
 
-sample_text = "I have experience in Python, Java, and web development."
-extracted_skills = extract_candidate_skills(sample_text)
-st.write("Extracted Skills:", extracted_skills)
 
 
 # Analyze Button in Sidebar
