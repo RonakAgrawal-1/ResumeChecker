@@ -1,0 +1,10 @@
+def extract_candidate_skills(text):
+    try:
+        extracted_skills = []
+        for skill in skills_keywords:
+            pattern = rf'\b{re.escape(skill)}\b'
+            if re.search(pattern, text, re.IGNORECASE):
+                extracted_skills.append(skill.lower().capitalize())
+        return extracted_skills
+    except Exception as e:
+        return {"error": str(e)}
