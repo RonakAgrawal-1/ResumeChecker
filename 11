@@ -1,0 +1,21 @@
+Here is the text for the additional section with your personal review:
+
+---
+
+## Personal Review
+
+1. **Code Auto-Suggestions**:
+    - The code auto-suggestions in Codility are not up to the mark. When using common syntax or data structures such as arrays, lists, or for loops, the suggestions provided are very limited. For instance, it might only suggest keywords like "for" or "list" without offering proper formatting or complete code snippets. Improving this feature could significantly enhance the user experience by providing more comprehensive and contextually relevant code suggestions.
+
+2. **Performance and Loading Times**:
+    - The platform can be quite slow and often requires more time to load, which consumes candidates' time that could otherwise be spent on solving problems. This lag can be frustrating and may impact the overall efficiency and effectiveness of the assessment process.
+
+3. **Copy-Paste Restrictions**:
+    - While Codility restricts copy-pasting within the code editor to maintain test integrity, this can be circumvented using external devices. For example, candidates can copy code on one device and paste it into the editor using another device, leveraging ecosystems like Apple or Google that allow seamless sharing across multiple devices. This loophole undermines the purpose of the restriction.
+
+4. **Tab Switching and Browser Changes**:
+    - Codility issues warnings when users switch tabs or change browsers during an assessment. While this is intended to prevent cheating, it can sometimes be a distraction or cause anxiety for candidates, especially if they accidentally trigger these warnings.
+
+---
+
+Feel free to add this section to your documentation.
